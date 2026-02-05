@@ -9,17 +9,16 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/TextPlugin.min.js"></script>
 
 <style>
-  /* Updated Fonts: Caveat (Modern Handwritten) & Quicksand (Modern Rounded) */
   @import url('https://fonts.googleapis.com/css2?family=Caveat:wght@500;700&family=Quicksand:wght@400;600&display=swap');
 
   body, html {
     margin: 0; padding: 0;
     background-color: #f7f1e3;
-    font-family: 'Quicksand', sans-serif; /* Modern, rounded font */
+    font-family: 'Quicksand', sans-serif;
     overflow-x: hidden;
   }
 
-  /* --- STAGE (Fixed Viewport) --- */
+  /* --- STAGE --- */
   #stage {
     position: fixed;
     top: 0; left: 0;
@@ -34,14 +33,17 @@
   /* --- ENVELOPE --- */
   .envelope-wrapper { 
     position: relative; 
-    width: 300px; height: 200px; 
+    width: 440px; 
+    height: 260px; 
+    max-width: 95vw; 
     transform-style: preserve-3d;
   }
 
   .env-part { position: absolute; }
 
   .envelope-back { 
-    bottom: 2px; left: 2px; width: 296px; height: 196px; 
+    bottom: 2px; left: 2px; 
+    width: calc(100% - 4px); height: calc(100% - 4px); 
     background-color: #d63031; 
     border-radius: 5px; 
     box-shadow: 0 10px 20px rgba(0,0,0,0.2); 
@@ -52,7 +54,7 @@
     bottom: 0; left: 0; 
     width: 0; height: 0; 
     border-style: solid; 
-    border-width: 0 150px 120px 150px; 
+    border-width: 0 220px 160px 220px; 
     border-color: transparent transparent #ff7675 transparent; 
     z-index: 20; 
     filter: drop-shadow(0 -2px 5px rgba(0,0,0,0.1));
@@ -63,34 +65,53 @@
     top: 0; left: 0; 
     width: 0; height: 0; 
     border-style: solid; 
-    border-width: 120px 150px 0 150px; 
+    border-width: 150px 220px 0 220px; 
     border-color: #ff7675 transparent transparent transparent; 
     transform-origin: top; 
     z-index: 25; 
     backface-visibility: hidden;
   }
 
-  /* --- THE READABLE LETTER --- */
+  @media (max-width: 460px) {
+    .envelope-wrapper { width: 340px; height: 220px; }
+    .pocket { border-width: 0 170px 140px 170px; }
+    .flap { border-width: 130px 170px 0 170px; }
+  }
+
+  /* --- THE READABLE LETTER (SHORTER & COMPACT) --- */
   .paper-readable {
-    width: 280px; height: 380px;
+    width: 92%; 
+    max-width: 400px; 
+    height: 400px; /* Reduced height to fix clipping */
     background-color: #fff;
     position: absolute;
     top: 50%; left: 50%; 
-    padding: 30px; box-sizing: border-box;
-    font-family: 'Caveat', cursive; /* Modern handwritten style */
-    font-size: 1.6rem; /* Slightly larger for readability */
+    padding: 20px; /* Slightly tighter padding */
+    box-sizing: border-box;
+    font-family: 'Caveat', cursive; 
+    font-size: 0.95rem; /* Adjusted font size for fit */
     color: #444;
-    line-height: 1.6;
+    line-height: 1.3; /* Tighter lines */
     box-shadow: 0 0 5px rgba(0,0,0,0.1);
     z-index: 5; 
     visibility: hidden; 
     opacity: 0;
+    overflow: hidden; 
+  }
+
+  @media (max-width: 460px) {
+    .paper-readable {
+      font-size: 0.85rem; /* Smaller for mobile */
+      padding: 15px;
+      height: 380px; 
+      width: 90%;
+    }
   }
 
   /* --- TIMELINE SECTION --- */
   #timeline-container {
     position: absolute;
-    top: 100vh; /* Starts below screen */
+    top: 100vh;
     width: 100%;
     display: flex;
     flex-direction: column;
@@ -111,30 +132,28 @@
   .memory-card {
     position: relative;
     width: 280px;
+    max-width: 85vw; 
     background: #fff;
-    padding: 15px 15px 40px 15px; /* Extra bottom padding for "Polaroid" look */
+    padding: 15px 15px 40px 15px;
     box-shadow: 0 10px 30px rgba(0,0,0,0.15);
-    margin: 80px 0; /* Vertical spacing */
+    margin: 80px 0;
     transform: rotate(-2deg);
     z-index: 1;
-    opacity: 0; /* Hidden initially */
+    opacity: 0;
   }
 
-  /* ALTERNATING LAYOUT (ZIG-ZAG) */
-  /* Even children pushed to the RIGHT */
   .memory-card:nth-child(even) {
     transform: rotate(3deg);
     margin-left: 120px; 
   }
   
-  /* Odd children pushed to the LEFT */
   .memory-card:nth-child(odd) {
     transform: rotate(-2deg);
     margin-right: 120px;
   }
 
   .photo-frame {
-    width: 100%; height: 220px; /* Slightly taller since no caption */
+    width: 100%; height: 220px;
     background-color: #eee;
     overflow: hidden;
   }
@@ -143,14 +162,13 @@
     width: 100%; height: 100%; object-fit: cover;
   }
 
-  /* Final Message Styles */
   #final-message {
     position: absolute;
     top: 50%; left: 50%;
-    transform: translate(-50%, -50%); /* Perfectly centered */
+    transform: translate(-50%, -50%);
     width: 90%;
     text-align: center;
-    font-family: 'Caveat', cursive; /* Modern handwritten style */
+    font-family: 'Caveat', cursive;
     font-size: 2.8rem;
     color: #c0392b;
     z-index: 100;
@@ -169,4 +187,138 @@
     border-radius: 20px;
     font-size: 0.9rem;
     font-weight: 600;
-    transform: rotate
+    transform: rotate(10deg);
+    font-family: 'Quicksand', sans-serif;
+  }
+
+  .scroll-track { height: 4200vh; } 
+  
+  .instruction {
+    position: fixed; bottom: 20px; width: 100%; text-align: center;
+    color: #999; font-size: 0.8rem; pointer-events: none; opacity: 0.7;
+    animation: bounce 2s infinite;
+    z-index: 200;
+  }
+  @keyframes bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-5px); } }
+
+  @media (max-width: 600px) {
+    .memory-card:nth-child(even), .memory-card:nth-child(odd) {
+      margin-left: 0; margin-right: 0;
+      transform: rotate(0deg);
+    }
+    #final-message {
+      font-size: 2rem;
+    }
+  }
+
+</style>
+</head>
+<body>
+
+<div id="stage">
+  
+  <div class="envelope-wrapper" id="envelope">
+    <div class="envelope-back env-part"></div>
+    <div class="paper-readable" id="letter-read">
+      <div id="message"></div>
+    </div>
+    <div class="pocket env-part"></div>
+    <div class="flap env-part" id="flap"></div>
+  </div>
+
+  <div id="timeline-container">
+    <div class="timeline-line"></div>
+    
+    <!-- 15 Cards -->
+    <div class="memory-card"><div class="date-badge">12.05.2022</div><div class="photo-frame"><img src="WhatsApp Image 2026-02-05 at 23.32.12.jpeg" alt="Foto"></div></div>
+    <div class="memory-card"><div class="date-badge">14.06.2022</div><div class="photo-frame"><img src="WhatsApp Image 2026-02-05 at 23.32.13.jpeg" alt="Foto"></div></div>
+    <div class="memory-card"><div class="date-badge">20.08.2022</div><div class="photo-frame"><img src="WhatsApp Image 2026-02-05 at 23.32.14.jpeg" alt="Foto"></div></div>
+    <div class="memory-card"><div class="date-badge">10.11.2022</div><div class="photo-frame"><img src="WhatsApp Image 2026-02-05 at 23.32.15.jpeg" alt="Foto"></div></div>
+    <div class="memory-card"><div class="date-badge">31.12.2022</div><div class="photo-frame"><img src="WhatsApp Image 2026-02-05 at 23.32.16.jpeg" alt="Foto"></div></div>
+    <div class="memory-card"><div class="date-badge">14.02.2023</div><div class="photo-frame"><img src="WhatsApp Image 2026-02-05 at 23.32.17.jpeg" alt="Foto"></div></div>
+    <div class="memory-card"><div class="date-badge">15.03.2023</div><div class="photo-frame"><img src="WhatsApp Image 2026-02-05 at 23.32.18.jpeg" alt="Foto"></div></div>
+    <div class="memory-card"><div class="date-badge">22.05.2023</div><div class="photo-frame"><img src="WhatsApp Image 2026-02-05 at 23.32.19.jpeg" alt="Foto"></div></div>
+    <div class="memory-card"><div class="date-badge">05.07.2023</div><div class="photo-frame"><img src="WhatsApp Image 2026-02-05 at 23.32.20.jpeg" alt="Foto"></div></div>
+    <div class="memory-card"><div class="date-badge">12.09.2023</div><div class="photo-frame"><img src="WhatsApp Image 2026-02-05 at 23.32.22.jpeg" alt="Foto"></div></div>
+    <div class="memory-card"><div class="date-badge">29.10.2023</div><div class="photo-frame"><img src="WhatsApp Image 2026-02-05 at 23.32.23.jpeg" alt="Foto"></div></div>
+    <div class="memory-card"><div class="date-badge">01.01.2024</div><div class="photo-frame"><img src="WhatsApp Image 2026-02-05 at 23.32.24.jpeg" alt="Foto"></div></div>
+    <div class="memory-card"><div class="date-badge">14.02.2024</div><div class="photo-frame"><img src="WhatsApp Image 2026-02-05 at 23.32.25.jpeg" alt="Foto"></div></div>
+    <div class="memory-card"><div class="date-badge">Bugün</div><div class="photo-frame"><img src="WhatsApp Image 2026-02-05 at 23.32.26.jpeg" alt="Foto"></div></div>
+    <div class="memory-card"><div class="date-badge">Sonsuza Dek</div><div class="photo-frame"><img src="WhatsApp Image 2026-02-05 at 23.32.27.jpeg" alt="Foto"></div></div>
+
+  </div>
+
+  <div id="final-message">
+    Hayatımın anlamı,<br>
+    Seni her şeyden çok seviyorum.<br>
+    Birlikte nice güzel yıllara.<br>
+    İyi ki varsın.
+  </div>
+
+</div>
+
+<div class="instruction">Aşağı kaydır &#9660;</div>
+<div class="scroll-track"></div>
+
+<script>
+  window.addEventListener("load", () => {
+    gsap.registerPlugin(ScrollTrigger, TextPlugin);
+
+    // Initial setup with GSAP centering
+    gsap.set("#letter-read", { 
+      xPercent: -50, yPercent: -50, y: 100, scale: 0.9, autoAlpha: 0 
+    });
+    
+    gsap.set(".memory-card", { opacity: 0, scale: 0.8, y: 100 });
+
+    const tl = gsap.timeline({
+      scrollTrigger: {
+        trigger: ".scroll-track",
+        start: "top top",
+        end: "bottom bottom",
+        scrub: 1.5,
+      }
+    });
+
+    // 1. OPEN
+    tl.to("#flap", { rotateX: 180, duration: 1, ease: "power1.inOut" })
+      .set("#flap", { zIndex: 1 });
+
+    // 2. SLIDE (Adjusted for shorter height - less upward movement needed)
+    // Moving y to -150 instead of -200 keeps the top visible on screen
+    tl.to("#letter-read", { autoAlpha: 1, y: -150, scale: 1, duration: 2.5, ease: "power2.out" })
+      .set("#letter-read", { zIndex: 100 })
+      .to("#letter-read", { y: 0, duration: 1 });
+
+    // 3. CLEANUP
+    tl.to(".env-part", { y: 500, opacity: 0, duration: 2 }, "<"); 
+
+    // 4. WRITE TEXT
+    const msg = "Seni çok seviyorum bebeğim.\n\nHayatımın en güzel iki senesini seninle geçirdim ve bunu gerçekten hissediyorum. Geriye dönüp baktığımda “keşke” dediğim neredeyse hiçbir an yok. Yaşadığımız her şey, iyi ya da kötü, beni sana daha da yakınlaştırdı.\n\nSevgili olduğumuz o gecenin mutluluğu hâlâ içimde. Bazen durup dururken aklıma geliyor ve istemsizce gülümsüyorum. Aradan zaman geçmesine rağmen o his hiç azalmadı her geçen gün artıyor.\n\nBenim için çok şeyi değiştirdin. Duygularımı ifade etmeyi, hissettiklerimi anlamayı ve söyleyebilmeyi seninle öğrendim. Daha önce fark etmediğim şeyleri fark ettirdin bana. En güzel duyguları seninle yaşadım.\n\nYanında kendim gibi olabilmek çok güzel. Sen bana sadece sevgiyi değil, paylaşmayı ve iletişim kurmayı da öğrettin.\n\nSeni gerçekten çok seviyorum. İyi ki varsın bebeğim. Umarım daha uzun yıllar beraber oluruz.\n\nBaşıma gelen en güzel şey sensin.";
+    
+    tl.to("#message", { duration: 25, opacity: 1, text: { value: msg, delimiter: "" }, ease: "none" });
+    tl.to({}, { duration: 5 }); 
+
+    // 5. AWAY
+    tl.to("#letter-read", { y: -800, opacity: 0, duration: 4, ease: "power2.in" });
+
+    // 6. TIMELINE
+    const timelineDuration = 60;
+    tl.to("#timeline-container", { y: -7500, duration: timelineDuration, ease: "none" }, "<"); 
+
+    const cards = gsap.utils.toArray(".memory-card");
+    cards.forEach((card, i) => {
+      const stagger = 3.5; 
+      const startPos = 1 + (i * stagger);
+      const offset = "-=" + (timelineDuration - startPos);
+      tl.to(card, { opacity: 1, scale: 1, y: 0, duration: 1.5 }, offset);
+    });
+
+    // 7. FINALE
+    tl.to("#timeline-container", { opacity: 0, duration: 2 }, "-=2");
+    tl.to("#final-message", { autoAlpha: 1, scale: 1.1, duration: 3, ease: "power2.out" });
+    tl.to({}, { duration: 5 });
+  });
+</script>
+</body>
+</html>
